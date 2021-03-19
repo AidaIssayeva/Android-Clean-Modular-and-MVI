@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_results_found">Sorry, we couldn\'t find any restaurants near you. You can pull to refresh little later.</string>
+    <string name="feed_header_text"> Discover local restaurants in %s</string>
+    <string name="app_name">Flash</string>
+    <string name="miles">%s mi.</string>
+    <string name="discover">Discover</string>
+    <string name="closed">Closed</string>
+    <string name="open">Open</string>
+    <string name="error_title">Uhh, Ohh %s</string>
+    <string name="error_message">Something went wrong on our end, please try again later.</string>
+    <string name="ok">Ok</string>
+</resources>

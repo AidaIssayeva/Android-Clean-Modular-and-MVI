@@ -1,0 +1,7 @@
+include ':ui_commons'
+include ':feed'
+include ':network'
+include ':datasource_restaurant'
+include ':repository_restaurant'
+include ':app'
+rootProject.name = "HomeProject"

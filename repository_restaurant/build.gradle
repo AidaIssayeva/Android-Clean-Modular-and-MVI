@@ -1,0 +1,15 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.10 '
+    implementation  'io.reactivex.rxjava2:rxkotlin:2.4.0'
+
+    implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
