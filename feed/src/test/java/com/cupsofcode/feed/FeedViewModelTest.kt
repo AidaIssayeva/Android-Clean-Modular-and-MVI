@@ -1,14 +1,11 @@
 package com.cupsofcode.feed
 
-import android.content.Context
 import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.feed.mvi.FeedViewState
 import com.cupsofcode.feed.usecase.FeedRestaurantsUseCase
 import com.cupsofcode.ui_commons.wrapper.StringResources
-import dagger.internal.ConfigureInitializationParameters
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.reactivex.Observable
 import io.reactivex.plugins.RxJavaPlugins
@@ -54,7 +51,7 @@ class FeedViewModelTest {
         val expectedResult = arrayOf(
             FeedViewState(),
             FeedViewState(isLoading = true),
-            FeedViewState(restaurants = restaurants, toolbarTitle = stringResources.getString(R.string.discover))
+            FeedViewState(restaurants = restaurants.map { it.toUiModel(stringResources) }, toolbarTitle = stringResources.getString(R.string.discover))
         )
         every { useCase.execute() } returns Observable.just(restaurants)
 

@@ -1,18 +1,12 @@
 package com.cupsofcode.feed
 
-import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.feed.usecase.FeedRestaurantsUseCase
 import com.cupsofcode.respository_restaurant.RestaurantRepository
-import com.cupsofcode.respository_restaurant.model.Restaurant
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
 import io.reactivex.Observable
-import io.reactivex.observers.TestObserver
-import io.reactivex.plugins.RxJavaPlugins
-import io.reactivex.schedulers.TestScheduler
-import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
