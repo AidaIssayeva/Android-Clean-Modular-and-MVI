@@ -10,7 +10,8 @@ data class Restaurant(
     val description: String,
     val distanceFromUser: Double,
     val nextOpenTime: ZonedDateTime?,
-    val nextCloseTime: ZonedDateTime?
+    val nextCloseTime: ZonedDateTime?,
+    var isLiked: Boolean
 ) {
     fun isOpen(): Boolean {
         val currentTimeInSF = ZonedDateTime.now(ZoneId.of("America/Los_Angeles"))

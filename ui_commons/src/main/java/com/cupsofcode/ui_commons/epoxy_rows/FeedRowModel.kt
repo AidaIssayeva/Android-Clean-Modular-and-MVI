@@ -29,6 +29,12 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
     @EpoxyAttribute
     var distance: String? = null
 
+    @EpoxyAttribute
+    var likedStatus: Boolean = false
+
+    @EpoxyAttribute
+    var likeClickListener: View.OnClickListener? = null
+
 
     override fun getDefaultLayout(): Int {
         return R.layout.row_feed
@@ -50,6 +56,15 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
         distance?.let {
             view.distance.text = it
         }
+
+        view.liked.setImageResource(
+            if(likedStatus){
+                R.drawable.ic_outline_star_24
+            } else {
+                R.drawable.ic_baseline_star_border_24
+            }
+        )
+        view.liked.setOnClickListener(likeClickListener)
 
         Glide.with(view)
             .load(logo)

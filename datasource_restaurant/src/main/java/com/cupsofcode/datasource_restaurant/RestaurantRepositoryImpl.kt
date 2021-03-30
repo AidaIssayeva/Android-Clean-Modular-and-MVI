@@ -1,17 +1,31 @@
 package com.cupsofcode.datasource_restaurant
 
+import android.content.Context
 import com.cupsofcode.network.restaurants.RestaurantNetwork
 import com.cupsofcode.respository_restaurant.RestaurantRepository
 import com.cupsofcode.respository_restaurant.model.Restaurant
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Observable.just
+import io.reactivex.rxkotlin.Observables.combineLatest
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RestaurantRepositoryImpl @Inject constructor(private val restaurantService: RestaurantNetwork) :
+class RestaurantRepositoryImpl @Inject constructor(
+    private val restaurantService: RestaurantNetwork,
+    private val context: Context
+) :
     RestaurantRepository {
+
+    private val sharedPref by lazy {
+        context.getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE)
+    }
+
+    private val publishSubject = BehaviorSubject.create<List<Restaurant>>()
 
     private val memoryCache =
         mutableListOf<Restaurant>() //decided to go with memory cache for this exercise, we can add db if needed as well
@@ -21,19 +35,17 @@ class RestaurantRepositoryImpl @Inject constructor(private val restaurantService
         long: Double,
         forceRefresh: Boolean
     ): Observable<List<Restaurant>> {
-        return Observable.defer {
-            val loading = memoryCache.isEmpty() || forceRefresh
-            Observable.just(memoryCache)
-                .flatMap {
-                    if (loading) {
-                        loadDatafromNetwork(lat, long)
-                    } else {
-                        just(it)
-                    }
-                }
-                .distinctUntilChanged()
+        val loading = memoryCache.isEmpty() || forceRefresh
+        return if (loading) {
+            loadDatafromNetwork(lat, long)
+                .subscribeOn(Schedulers.io())
 
-        }.subscribeOn(Schedulers.io())
+        } else {
+            publishSubject.hide()
+                .distinctUntilChanged()
+                .subscribeOn(Schedulers.io())
+        }
+
     }
 
     private fun loadDatafromNetwork(
@@ -43,11 +55,26 @@ class RestaurantRepositoryImpl @Inject constructor(private val restaurantService
         return restaurantService.getRestaurants(lat = lat, long = long, offset = 0, limit = 50)
             .map {
                 it.map {
-                    it.toRestaurant()
+                    it.toRestaurant(sharedPref.getBoolean(it.id.toString(), false))
                 }
             }.doOnSuccess {
                 memoryCache.addAll(it)
+                publishSubject.onNext(it)
             }.toObservable()
     }
 
+    override fun likeUnlike(restaurantId: Int, liked: Boolean): Completable {
+        return Completable.fromAction {
+            sharedPref.edit()
+                .putBoolean(restaurantId.toString(), liked)
+                .apply()
+
+            memoryCache.first { it.id == restaurantId }.isLiked = liked
+            publishSubject.onNext(memoryCache)
+        }
+    }
+
+    companion object {
+        const val SHARED_NAME = "LIKED"
+    }
 }

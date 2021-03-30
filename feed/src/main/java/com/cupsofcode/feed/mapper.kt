@@ -16,6 +16,7 @@ fun Restaurant.toUiModel(stringsResources: StringResources): RestaurantUiModel {
        distance =  stringsResources.getString(
            R.string.miles,
            DecimalFormat("#.##").format(distanceFromUser)
-       )
+       ),
+       isLiked = this.isLiked
     )
 }

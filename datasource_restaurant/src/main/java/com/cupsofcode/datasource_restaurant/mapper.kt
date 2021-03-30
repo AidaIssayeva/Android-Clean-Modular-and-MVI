@@ -5,7 +5,7 @@ import com.cupsofcode.network.restaurants.RestaurantResponse
 import com.cupsofcode.network.restaurants.StoreResponse
 import com.cupsofcode.respository_restaurant.model.Restaurant
 
-fun StoreResponse.toRestaurant(): Restaurant {
+fun StoreResponse.toRestaurant(isLiked: Boolean): Restaurant {
     return Restaurant(
         id = this.id,
         name = this.name,
@@ -17,6 +17,7 @@ fun StoreResponse.toRestaurant(): Restaurant {
         description = this.description,
         distanceFromUser = this.distance_from_consumer,
         nextCloseTime = DateHelper.getDateTime(next_close_time),
-        nextOpenTime = DateHelper.getDateTime(next_open_time)
+        nextOpenTime = DateHelper.getDateTime(next_open_time),
+        isLiked = isLiked
     )
 }

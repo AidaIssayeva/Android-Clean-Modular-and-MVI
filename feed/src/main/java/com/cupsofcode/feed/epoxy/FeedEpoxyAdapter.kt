@@ -47,8 +47,12 @@ class FeedEpoxyAdapter(
                         description(restaurant.description)
                         status(restaurant.status)
                         distance(restaurant.distance)
+                        likedStatus(restaurant.isLiked)
                         onClickListener { _ ->
                             intentsSubject.onNext(FeedIntent.RestaurantClicked(restaurantId = restaurant.id))
+                        }
+                        likeClickListener { _ ->
+                            intentsSubject.onNext(FeedIntent.LikeClicked(restaurantId = restaurant.id, isLiked = !restaurant.isLiked))
                         }
                     }
                 }

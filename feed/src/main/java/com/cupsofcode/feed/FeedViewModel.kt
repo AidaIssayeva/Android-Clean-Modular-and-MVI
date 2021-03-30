@@ -4,16 +4,19 @@ import androidx.lifecycle.ViewModel
 import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.feed.mvi.FeedViewState
 import com.cupsofcode.feed.usecase.FeedRestaurantsUseCase
+import com.cupsofcode.feed.usecase.RestaurantLikedUseCase
 import com.cupsofcode.ui_commons.wrapper.StringResources
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
 import java.util.concurrent.Callable
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class FeedViewModel @Inject constructor(
     private val feedRestaurantsUseCase: FeedRestaurantsUseCase,
+    private val likeUseCase: RestaurantLikedUseCase,
     private val stringResources: StringResources
 ) :
     ViewModel() {
@@ -51,7 +54,18 @@ class FeedViewModel @Inject constructor(
                     Completable.complete()
                 }.toObservable<FeedIntent>()
 
-            Observable.merge(restaurantClicked, it.ofType(FeedIntent.ErrorDismissed::class.java))
+            val likeClicked = it.ofType(FeedIntent.LikeClicked::class.java)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .flatMapCompletable { intent ->
+                    likeUseCase.execute(intent.restaurantId, intent.isLiked)
+                }.toObservable<FeedIntent>()
+                .startWith(FeedIntent.Loading)
+
+            Observable.merge(
+                restaurantClicked,
+                likeClicked,
+                it.ofType(FeedIntent.ErrorDismissed::class.java)
+            )
         }
 
         return Observable.merge(viewIntents, dataIntent)

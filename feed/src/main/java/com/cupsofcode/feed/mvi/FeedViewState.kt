@@ -16,5 +16,6 @@ data class RestaurantUiModel(
     val name: String,
     val logo: String,
     val status: String,
-    val description: String
+    val description: String,
+    val isLiked: Boolean
 )

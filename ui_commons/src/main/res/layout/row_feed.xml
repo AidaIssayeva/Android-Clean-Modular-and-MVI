@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginStart="@dimen/default_margin"
     android:layout_marginTop="@dimen/small_margin"
     android:layout_marginEnd="@dimen/default_margin"
-    app:cardCornerRadius="@dimen/small_margin"
-    android:layout_marginBottom="@dimen/small_margin">
+    android:layout_marginBottom="@dimen/small_margin"
+    app:cardCornerRadius="@dimen/small_margin">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:tools="http://schemas.android.com/tools"
-        android:minHeight="@dimen/item_header_min_height"
-        android:foreground="?attr/selectableItemBackground"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:minHeight="@dimen/item_header_min_height">
 
         <ImageView
             android:id="@+id/img"
@@ -25,14 +24,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/name" />
 
+        <ImageView
+            android:id="@+id/liked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/img" />
+
         <TextView
             android:id="@+id/name"
-            android:textColor="@color/colorPrimaryDark"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin"
             android:layout_marginTop="@dimen/default_margin"
             android:layout_marginEnd="@dimen/default_margin"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/title_size"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,11 +50,11 @@
         <TextView
             android:id="@+id/type"
             android:layout_width="0dp"
-            android:maxLines="3"
-            android:ellipsize="end"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/default_margin"
+            android:ellipsize="end"
+            android:maxLines="3"
             android:textSize="@dimen/header_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/name"
@@ -56,11 +63,11 @@
 
         <TextView
             android:id="@+id/distance"
-            android:textColor="@color/black"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/default_margin"
+            android:textColor="@color/black"
             android:textSize="@dimen/header_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/type"
@@ -69,11 +76,11 @@
 
         <TextView
             android:id="@+id/time"
-            android:textColor="@color/black"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/default_margin"
             android:layout_marginBottom="@dimen/default_margin"
+            android:textColor="@color/black"
             android:textSize="@dimen/header_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
