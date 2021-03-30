@@ -26,11 +26,14 @@
 
         <ImageView
             android:id="@+id/liked"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/default_margin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/img" />
+            android:layout_width="@dimen/large_margin"
+            android:layout_height="@dimen/large_margin"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="@dimen/small_margin"
+            android:scaleType="fitCenter"
+            app:layout_constraintEnd_toEndOf="@id/img"
+            app:layout_constraintStart_toStartOf="@id/img"
+            app:layout_constraintTop_toBottomOf="@id/img" />
 
         <TextView
             android:id="@+id/name"

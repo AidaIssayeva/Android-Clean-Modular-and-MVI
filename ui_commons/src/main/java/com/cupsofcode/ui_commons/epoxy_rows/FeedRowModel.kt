@@ -58,7 +58,7 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
         }
 
         view.liked.setImageResource(
-            if(likedStatus){
+            if (likedStatus) {
                 R.drawable.ic_outline_star_24
             } else {
                 R.drawable.ic_baseline_star_border_24
