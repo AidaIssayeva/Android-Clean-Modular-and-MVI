@@ -59,7 +59,6 @@ class FeedViewModel @Inject constructor(
                 .switchMap { intent ->
                     likeUseCase.execute(intent.restaurantId, intent.isLiked)
                         .toObservable<FeedIntent>()
-                        .startWith(FeedIntent.Loading)
                 }
 
             Observable.merge(
