@@ -7,11 +7,8 @@ import com.cupsofcode.respository_restaurant.model.Restaurant
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Observable.just
-import io.reactivex.Single
-import io.reactivex.rxkotlin.Observables.combineLatest
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,7 +26,7 @@ class RestaurantRepositoryImpl @Inject constructor(
     private val memoryCache =
         mutableListOf<Restaurant>() //decided to go with memory cache for this exercise, we can add db if needed as well
 
-    private val publishSubject by lazy {
+    private val behavSubject by lazy {
         BehaviorSubject.createDefault<List<Restaurant>>(memoryCache)
     }
 
@@ -38,8 +35,8 @@ class RestaurantRepositoryImpl @Inject constructor(
         long: Double,
         forceRefresh: Boolean
     ): Observable<List<Restaurant>> {
-        return publishSubject.hide()
-            .flatMap {
+        return behavSubject.hide()
+            .switchMap {
                 val loading = memoryCache.isEmpty() || forceRefresh
                 if (loading) {
                     loadDatafromNetwork(lat, long)
@@ -62,7 +59,7 @@ class RestaurantRepositoryImpl @Inject constructor(
                 }
             }.doOnSuccess {
                 memoryCache.addAll(it)
-                publishSubject.onNext(it)
+                behavSubject.onNext(it)
             }.toObservable()
     }
 
@@ -73,7 +70,7 @@ class RestaurantRepositoryImpl @Inject constructor(
                 .apply()
 
             memoryCache.first { it.id == restaurantId }.isLiked = liked
-            publishSubject.onNext(memoryCache)
+            behavSubject.onNext(memoryCache)
         }
     }
 
