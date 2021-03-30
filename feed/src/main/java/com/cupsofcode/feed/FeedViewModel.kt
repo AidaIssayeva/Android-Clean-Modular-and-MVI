@@ -56,10 +56,11 @@ class FeedViewModel @Inject constructor(
 
             val likeClicked = it.ofType(FeedIntent.LikeClicked::class.java)
                 .debounce(300, TimeUnit.MILLISECONDS)
-                .flatMapCompletable { intent ->
+                .switchMap { intent ->
                     likeUseCase.execute(intent.restaurantId, intent.isLiked)
-                }.toObservable<FeedIntent>()
-                .startWith(FeedIntent.Loading)
+                        .toObservable<FeedIntent>()
+                        .startWith(FeedIntent.Loading)
+                }
 
             Observable.merge(
                 restaurantClicked,

@@ -7,6 +7,7 @@ import com.cupsofcode.respository_restaurant.model.Restaurant
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Observable.just
+import io.reactivex.Single
 import io.reactivex.rxkotlin.Observables.combineLatest
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -25,28 +26,30 @@ class RestaurantRepositoryImpl @Inject constructor(
         context.getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE)
     }
 
-    private val publishSubject = BehaviorSubject.create<List<Restaurant>>()
-
     private val memoryCache =
         mutableListOf<Restaurant>() //decided to go with memory cache for this exercise, we can add db if needed as well
+
+    private val publishSubject by lazy {
+        BehaviorSubject.createDefault<List<Restaurant>>(memoryCache)
+    }
 
     override fun getNearbyRestaurants(
         lat: Double,
         long: Double,
         forceRefresh: Boolean
     ): Observable<List<Restaurant>> {
-        val loading = memoryCache.isEmpty() || forceRefresh
-        return if (loading) {
-            loadDatafromNetwork(lat, long)
-                .subscribeOn(Schedulers.io())
-
-        } else {
-            publishSubject.hide()
-                .distinctUntilChanged()
-                .subscribeOn(Schedulers.io())
-        }
-
+        return publishSubject.hide()
+            .flatMap {
+                val loading = memoryCache.isEmpty() || forceRefresh
+                if (loading) {
+                    loadDatafromNetwork(lat, long)
+                } else {
+                    just(it)
+                }
+            }
+            .subscribeOn(Schedulers.io())
     }
+
 
     private fun loadDatafromNetwork(
         lat: Double,
