@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cupsofcode.feed.dagger.FeedComponent
 import com.cupsofcode.feed.epoxy.FeedEpoxyAdapter
 import com.cupsofcode.feed.mvi.FeedIntent
+import com.cupsofcode.navigator.NavigatorComponent
 import com.cupsofcode.respository_restaurant.RestaurantComponent
 import com.cupsofcode.ui_commons.wrapper.ResourcesComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -28,9 +29,12 @@ class FeedFragment : Fragment() {
             activity?.applicationContext?.getSystemService(RestaurantComponent::class.java.name)
         val resourcesComponent =
             activity?.applicationContext?.getSystemService(ResourcesComponent::class.java.name)
+        val navigatorComponent =
+            activity?.applicationContext?.getSystemService(NavigatorComponent::class.java.name)
         FeedComponent.builder()
             .resourceComponent(resourcesComponent!! as ResourcesComponent)
             .restaurantComponent(restaurantComponent!! as RestaurantComponent)
+            .navigationComponent(navigatorComponent!! as NavigatorComponent)
             .build()
     }
 
