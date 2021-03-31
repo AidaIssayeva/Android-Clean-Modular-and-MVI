@@ -1,7 +1,9 @@
 package com.cupsofcode.homeproject.dagger
 
 import android.content.Context
+import com.cupsofcode.homeproject.NavigatorImpl
 import com.cupsofcode.homeproject.ResourcesWrapper
+import com.cupsofcode.navigator.Navigator
 import com.cupsofcode.ui_commons.wrapper.StringResources
 import dagger.Module
 import dagger.Provides
@@ -22,5 +24,11 @@ class AppModule constructor(private val appContext: Context) {
     @Singleton
     fun providesStringResources(resourcesWrapper: ResourcesWrapper): StringResources {
         return resourcesWrapper
+    }
+
+    @Provides
+    @Singleton
+    fun providesNavigator(): Navigator {
+        return NavigatorImpl(appContext)
     }
 }

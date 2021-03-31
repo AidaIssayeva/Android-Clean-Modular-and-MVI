@@ -55,10 +55,6 @@ dependencies {
     implementation 'com.airbnb.android:epoxy:3.11.0'
     kapt 'com.airbnb.android:epoxy-processor:3.11.0'
 
-
-
-
-
-
+    implementation project(':navigator')
 
 }

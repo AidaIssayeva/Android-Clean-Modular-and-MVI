@@ -5,6 +5,7 @@ import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.feed.mvi.FeedViewState
 import com.cupsofcode.feed.usecase.FeedRestaurantsUseCase
 import com.cupsofcode.feed.usecase.RestaurantLikedUseCase
+import com.cupsofcode.navigator.Navigator
 import com.cupsofcode.ui_commons.wrapper.StringResources
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class FeedViewModel @Inject constructor(
     private val feedRestaurantsUseCase: FeedRestaurantsUseCase,
     private val likeUseCase: RestaurantLikedUseCase,
-    private val stringResources: StringResources
+    private val stringResources: StringResources,
+    private val navigator: Navigator
 ) :
     ViewModel() {
     private val compositeDisposable = CompositeDisposable()
@@ -50,8 +52,7 @@ class FeedViewModel @Inject constructor(
             val restaurantClicked = it.ofType(FeedIntent.RestaurantClicked::class.java)
                 .flatMapCompletable {
                     //open Details screen -> there will be navigator
-                    println("clicked")
-                    Completable.complete()
+                    navigator.showToast("Details ${it.restaurantId} clicked")
                 }.toObservable<FeedIntent>()
 
             val likeClicked = it.ofType(FeedIntent.LikeClicked::class.java)

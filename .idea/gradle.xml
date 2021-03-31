@@ -15,6 +15,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/datasource_restaurant" />
             <option value="$PROJECT_DIR$/feed" />
+            <option value="$PROJECT_DIR$/navigator" />
             <option value="$PROJECT_DIR$/network" />
             <option value="$PROJECT_DIR$/repository_restaurant" />
             <option value="$PROJECT_DIR$/ui_commons" />
