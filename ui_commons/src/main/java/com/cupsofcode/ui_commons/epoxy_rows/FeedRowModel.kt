@@ -59,9 +59,9 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
 
         view.liked.setImageResource(
             if (likedStatus) {
-                R.drawable.ic_outline_star_24
+                R.drawable.ic_outline_thumb_up_24
             } else {
-                R.drawable.ic_baseline_star_border_24
+                R.drawable.ic_baseline_thumb_up_24
             }
         )
         view.liked.setOnClickListener(likeClickListener)

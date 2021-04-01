@@ -31,6 +31,7 @@
             android:foreground="?attr/selectableItemBackground"
             android:padding="@dimen/small_margin"
             android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/img"
             app:layout_constraintStart_toStartOf="@id/img"
             app:layout_constraintTop_toBottomOf="@id/img" />
