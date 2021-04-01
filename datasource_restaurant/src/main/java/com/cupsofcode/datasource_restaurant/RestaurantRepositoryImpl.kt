@@ -1,6 +1,7 @@
 package com.cupsofcode.datasource_restaurant
 
 import android.content.Context
+import com.cupsofcode.cache.InMemoryCache
 import com.cupsofcode.network.restaurants.RestaurantNetwork
 import com.cupsofcode.respository_restaurant.RestaurantRepository
 import com.cupsofcode.respository_restaurant.model.Restaurant
@@ -23,11 +24,8 @@ class RestaurantRepositoryImpl @Inject constructor(
         context.getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE)
     }
 
-    private val memoryCache =
-        mutableListOf<Restaurant>() //decided to go with memory cache for this exercise, we can add db if needed as well
-
-    private val behavSubject by lazy {
-        BehaviorSubject.createDefault<List<Restaurant>>(memoryCache)
+    private val cache by lazy {
+        InMemoryCache<Restaurant>()
     }
 
     override fun getNearbyRestaurants(
@@ -35,32 +33,31 @@ class RestaurantRepositoryImpl @Inject constructor(
         long: Double,
         forceRefresh: Boolean
     ): Observable<List<Restaurant>> {
-        return behavSubject.hide()
-            .switchMap {
-                val loading = memoryCache.isEmpty() || forceRefresh
+        return cache.isEmpty()
+            .flatMapObservable { empty ->
+                val loading = empty || forceRefresh
                 if (loading) {
-                    loadDatafromNetwork(lat, long)
+                    pullFromApi(lat, long)
+                        .andThen(cache.allObservable())
                 } else {
-                    just(it)
+                    cache.allObservable()
                 }
-            }
-            .subscribeOn(Schedulers.io())
+            }.subscribeOn(Schedulers.io())
     }
 
 
-    private fun loadDatafromNetwork(
+    private fun pullFromApi(
         lat: Double,
         long: Double
-    ): Observable<List<Restaurant>> {
+    ): Completable {
         return restaurantService.getRestaurants(lat = lat, long = long, offset = 0, limit = 50)
             .map {
                 it.map {
                     it.toRestaurant(sharedPref.getBoolean(it.id.toString(), false))
                 }
-            }.doOnSuccess {
-                memoryCache.addAll(it)
-                behavSubject.onNext(it)
-            }.toObservable()
+            }.flatMapCompletable {
+                cache.putAll(it) { it.id.toString() }
+            }
     }
 
     override fun likeUnlike(restaurantId: Int, liked: Boolean): Completable {
@@ -68,10 +65,12 @@ class RestaurantRepositoryImpl @Inject constructor(
             sharedPref.edit()
                 .putBoolean(restaurantId.toString(), liked)
                 .apply()
-
-            memoryCache.first { it.id == restaurantId }.isLiked = liked
-            behavSubject.onNext(memoryCache)
-        }
+        }.mergeWith(
+            cache.oneSingle(restaurantId.toString())
+                .flatMapCompletable { restaurant ->
+                    cache.put(restaurantId.toString(), restaurant.copy(isLiked = liked))
+                }
+        )
     }
 
     companion object {

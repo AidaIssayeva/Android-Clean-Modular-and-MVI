@@ -34,7 +34,7 @@ open class InMemoryCache<V : Any> @Inject constructor() {
         }
     }
 
-    fun put(value: V, id: String): Completable {
+    fun put(id: String, value: V): Completable {
         return Completable.fromCallable {
             concurrentMap[id] = value
             cacheSubject.onNext(concurrentMap)
