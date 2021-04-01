@@ -25,10 +25,4 @@ class AppModule constructor(private val appContext: Context) {
     fun providesStringResources(resourcesWrapper: ResourcesWrapper): StringResources {
         return resourcesWrapper
     }
-
-    @Provides
-    @Singleton
-    fun providesNavigator(): Navigator {
-        return NavigatorImpl(appContext)
-    }
 }

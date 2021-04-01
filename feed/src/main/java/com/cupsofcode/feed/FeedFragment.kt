@@ -30,7 +30,7 @@ class FeedFragment : Fragment() {
         val resourcesComponent =
             activity?.applicationContext?.getSystemService(ResourcesComponent::class.java.name)
         val navigatorComponent =
-            activity?.applicationContext?.getSystemService(NavigatorComponent::class.java.name)
+            activity?.getSystemService(NavigatorComponent::class.java.name)
         FeedComponent.builder()
             .resourceComponent(resourcesComponent!! as ResourcesComponent)
             .restaurantComponent(restaurantComponent!! as RestaurantComponent)

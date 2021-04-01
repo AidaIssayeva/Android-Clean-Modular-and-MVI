@@ -11,7 +11,7 @@ import javax.inject.Singleton
 @Component(
     modules = [RestaurantDataModule::class, NetworkModule::class, AppModule::class]
 )
-interface AppComponent: RestaurantComponent, ResourcesComponent, NavigatorComponent {
+interface AppComponent: RestaurantComponent, ResourcesComponent {
 
     @Component.Builder
     interface Builder {
