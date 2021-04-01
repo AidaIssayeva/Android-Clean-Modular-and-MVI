@@ -1,3 +1,4 @@
+include ':cache'
 include ':ui_commons'
 include ':feed'
 include ':network'
