@@ -13,6 +13,6 @@ interface RestaurantRepository {
         forceRefresh: Boolean = false
     ): Observable<List<Restaurant>>
 
-    fun likeUnlike(restaurantId: Int, liked: Boolean): Completable
+    fun likeUnlike(restaurantId: String, liked: Boolean): Completable
 
 }

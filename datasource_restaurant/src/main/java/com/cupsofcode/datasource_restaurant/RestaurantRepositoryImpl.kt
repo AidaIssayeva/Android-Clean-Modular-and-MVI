@@ -56,19 +56,19 @@ class RestaurantRepositoryImpl @Inject constructor(
                     it.toRestaurant(sharedPref.getBoolean(it.id.toString(), false))
                 }
             }.flatMapCompletable {
-                cache.putAll(it) { it.id.toString() }
+                cache.putAll(it) { it.id }
             }
     }
 
-    override fun likeUnlike(restaurantId: Int, liked: Boolean): Completable {
+    override fun likeUnlike(restaurantId: String, liked: Boolean): Completable {
         return Completable.fromAction {
             sharedPref.edit()
-                .putBoolean(restaurantId.toString(), liked)
+                .putBoolean(restaurantId, liked)
                 .apply()
         }.mergeWith(
-            cache.oneSingle(restaurantId.toString())
+            cache.oneSingle(restaurantId)
                 .flatMapCompletable { restaurant ->
-                    cache.put(restaurantId.toString(), restaurant.copy(isLiked = liked))
+                    cache.put(restaurantId, restaurant.copy(isLiked = liked))
                 }
         )
     }

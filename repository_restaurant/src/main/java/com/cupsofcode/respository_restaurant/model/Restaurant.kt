@@ -4,7 +4,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 
 data class Restaurant(
-    val id: Int,
+    val id: String,
     val name: String,
     val logo: String,
     val description: String,

@@ -7,7 +7,7 @@ import com.cupsofcode.respository_restaurant.model.Restaurant
 
 fun StoreResponse.toRestaurant(isLiked: Boolean): Restaurant {
     return Restaurant(
-        id = this.id,
+        id = this.id.toString(),
         name = this.name,
         logo = if (this.cover_img_url.isNotEmpty()) {
             this.cover_img_url
