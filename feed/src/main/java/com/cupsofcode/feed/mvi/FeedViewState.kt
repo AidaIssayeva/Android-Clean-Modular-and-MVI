@@ -11,7 +11,7 @@ data class FeedViewState(
 )
 
 data class RestaurantUiModel(
-    val id: Int,
+    val id: String,
     val distance: String,
     val name: String,
     val logo: String,

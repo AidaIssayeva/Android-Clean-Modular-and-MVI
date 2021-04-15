@@ -9,7 +9,7 @@ sealed class FeedIntent {
 
     object Loading : FeedIntent()
 
-    data class RestaurantClicked(val restaurantId: Int) : FeedIntent()
+    data class RestaurantClicked(val restaurantId: String) : FeedIntent()
 
-    data class LikeClicked(val restaurantId: Int, val isLiked: Boolean) : FeedIntent()
+    data class LikeClicked(val restaurantId: String, val isLiked: Boolean) : FeedIntent()
 }
