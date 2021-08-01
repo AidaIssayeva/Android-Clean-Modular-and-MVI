@@ -20,7 +20,6 @@ class MainActivity : AppCompatActivity() {
             applicationContext?.getSystemService(NavigatorComponent::class.java.name)
         MainActivityComponent.builder()
             .activityModule(MainActivityModule(supportFragmentManager, applicationContext))
-            // .navigationComponent(navigatorComponent!! as NavigatorComponent)
             .build()
     }
     private val viewModel by lazy {
