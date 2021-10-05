@@ -8,11 +8,11 @@ import com.cupsofcode.respository_restaurant.model.Restaurant
 fun StoreResponse.toRestaurant(isLiked: Boolean): Restaurant {
     return Restaurant(
         id = this.id.toString(),
-        name = this.name,
-        logo = if (this.cover_img_url.isNotEmpty()) {
-            this.cover_img_url
+        name = this.name ?: "",
+        logo = if (this.cover_img_url.isNullOrEmpty()) {
+            this.header_img_url ?: ""
         } else {
-            this.header_img_url
+            this.cover_img_url ?: ""
         },
         description = this.description,
         distanceFromUser = this.distance_from_consumer,
