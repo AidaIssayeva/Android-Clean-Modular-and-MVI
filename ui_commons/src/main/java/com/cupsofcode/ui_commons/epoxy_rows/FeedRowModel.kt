@@ -68,6 +68,7 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
 
         Glide.with(view)
             .load(logo)
+            .circleCrop()
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
             .into(view.img)
