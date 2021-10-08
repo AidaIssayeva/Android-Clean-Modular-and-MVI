@@ -38,8 +38,8 @@ class ActivityViewModel @Inject constructor(
         val obtainReviewInfo = Single.create<ReviewInfo> { emitter ->
             val session = sharedPreferences.getInt(SESSION, 1)
             if (session == 5 || session == 10 || session == 20) {
-                val reviewInfo = reviewManager.requestReviewFlow()
-                reviewInfo.addOnCompleteListener { task ->
+                val request = reviewManager.requestReviewFlow()
+                request.addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         emitter.onSuccess(task.result)
                     } else {
