@@ -47,10 +47,6 @@ class MainActivity : AppCompatActivity() {
 
                 })
         )
-
-        review.setOnClickListener {
-            intentsSubject.onNext(ActivityIntent.OnReviewClicked)
-        }
     }
 
     override fun getSystemService(name: String): Any? {

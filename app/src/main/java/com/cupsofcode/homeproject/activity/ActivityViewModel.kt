@@ -31,7 +31,7 @@ class ActivityViewModel @Inject constructor(
 
     private fun bindIntents(intents: Observable<ActivityIntent>): Observable<ActivityIntent> {
 
-        val obtainReviewInfoCompletable = Single.create<ReviewInfo> { emitter ->
+        val obtainReviewInfo = Single.create<ReviewInfo> { emitter ->
             val reviewInfo = reviewManager.requestReviewFlow()
             reviewInfo.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -57,12 +57,7 @@ class ActivityViewModel @Inject constructor(
                     navigator.navigateTo(NavigatorPath.Feed)
                 }.toObservable<ActivityIntent>()
 
-            val inAppReviewRequested = it.ofType(ActivityIntent.OnReviewClicked::class.java)
-                .flatMap {
-                    obtainReviewInfoCompletable
-                }
-
-            Observable.merge(inAppReviewCompleted, inAppReviewRequested)
+            Observable.merge(inAppReviewCompleted, obtainReviewInfo)
         }
 
         val ass = Observable.just(ActivityIntent.NoOp)
