@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
                 .subscribe({ viewState ->
                     viewState.reviewInfo?.run {
                         val review = reviewManager.launchReviewFlow(this@MainActivity, this)
-                        println("in-app:" + this)
                         review.addOnCompleteListener {
                             intentsSubject.onNext(ActivityIntent.InAppReviewCompleted)
                         }
