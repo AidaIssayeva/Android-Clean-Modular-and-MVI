@@ -57,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        intentsSubject.onNext(ActivityIntent.Session)
+        super.onStop()
+    }
+
     override fun onDestroy() {
         compositeDisposable.dispose()
         super.onDestroy()

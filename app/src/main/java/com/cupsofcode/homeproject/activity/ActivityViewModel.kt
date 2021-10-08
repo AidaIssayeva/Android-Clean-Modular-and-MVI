@@ -1,20 +1,24 @@
 package com.cupsofcode.homeproject.activity
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import com.cupsofcode.navigator.Navigator
 import com.cupsofcode.navigator.NavigatorPath
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import java.util.concurrent.Callable
 import javax.inject.Inject
 
+private const val SESSION = "session"
 
 class ActivityViewModel @Inject constructor(
     private val navigator: Navigator,
-    private val reviewManager: ReviewManager
+    private val reviewManager: ReviewManager,
+    private val sharedPreferences: SharedPreferences
 ) : ViewModel() {
 
     private val initialState = Callable {
@@ -32,14 +36,19 @@ class ActivityViewModel @Inject constructor(
     private fun bindIntents(intents: Observable<ActivityIntent>): Observable<ActivityIntent> {
 
         val obtainReviewInfo = Single.create<ReviewInfo> { emitter ->
-            val reviewInfo = reviewManager.requestReviewFlow()
-            reviewInfo.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    emitter.onSuccess(task.result)
-                } else {
-                    emitter.onError(Throwable(task.exception))
-                }
+            val session = sharedPreferences.getInt(SESSION, 1)
+            if (session == 5 || session == 10 || session == 20) {
+                val reviewInfo = reviewManager.requestReviewFlow()
+                reviewInfo.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        emitter.onSuccess(task.result)
+                    } else {
+                        emitter.onError(Throwable(task.exception))
+                    }
 
+                }
+            } else {
+                emitter.onError(Throwable("no time to request in-app review"))
             }
         }.map<ActivityIntent> {
             ActivityIntent.InAppReviewRequested(it)
@@ -52,16 +61,23 @@ class ActivityViewModel @Inject constructor(
         val viewIntents = intents.publish {
             val inAppReviewCompleted = it.ofType(ActivityIntent.InAppReviewCompleted::class.java)
                 .flatMapCompletable {
-
-                    //after received a signal that review flow ended, we proceed with regular flow
+                    //after receiving a signal that review flow ended, we proceed with regular flow
                     navigator.navigateTo(NavigatorPath.Feed)
                 }.toObservable<ActivityIntent>()
 
-            Observable.merge(inAppReviewCompleted, obtainReviewInfo)
+            val saveSessionNumber = it.ofType(ActivityIntent.Session::class.java)
+                .flatMapCompletable {
+                    Completable.fromAction {
+                        val session = sharedPreferences.getInt(SESSION, 1)
+                        println("shasdd::" + session)
+                        sharedPreferences.edit().putInt(SESSION, (session + 1)).apply()
+                    }
+                }.toObservable<ActivityIntent>()
+
+            Observable.merge(inAppReviewCompleted, saveSessionNumber)
         }
 
-        val ass = Observable.just(ActivityIntent.NoOp)
-        return Observable.merge(ass, viewIntents)
+        return Observable.merge(obtainReviewInfo, viewIntents)
     }
 
     private val reducer =

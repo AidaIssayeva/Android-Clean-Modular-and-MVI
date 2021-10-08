@@ -16,7 +16,7 @@ sealed class ActivityIntent {
 
     data class Error(val throwable: Throwable) : ActivityIntent()
 
-    object OnReviewClicked : ActivityIntent()
+    object Session : ActivityIntent()
 
     object NoOp : ActivityIntent()
 }

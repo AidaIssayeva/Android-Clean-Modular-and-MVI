@@ -1,6 +1,7 @@
 package com.cupsofcode.homeproject.activity
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.fragment.app.FragmentManager
 import com.cupsofcode.homeproject.NavigatorImpl
 import com.cupsofcode.navigator.Navigator
@@ -27,5 +28,11 @@ class MainActivityModule constructor(
     @Singleton
     fun providesReviewManager(): ReviewManager {
         return ReviewManagerFactory.create(context)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSharedPreferences(): SharedPreferences {
+        return context.getSharedPreferences("shared", Context.MODE_PRIVATE)
     }
 }
