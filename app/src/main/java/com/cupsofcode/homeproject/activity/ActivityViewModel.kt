@@ -15,7 +15,7 @@ class ActivityViewModel @Inject constructor(private val navigator: Navigator) : 
         ViewState()
     }
 
-    fun bind(intents: Observable<ActivityIntent>) = bindIntents(intents)
+    fun bind(intents: Observable<ActivityIntent>): Observable<ViewState> = bindIntents(intents)
         .scanWith(initialState, reducer)
         .doOnError { println("error:" + it) }
         .onErrorReturn {
