@@ -30,6 +30,7 @@
             android:layout_height="@dimen/large_margin"
             android:foreground="?attr/selectableItemBackground"
             android:padding="@dimen/small_margin"
+            android:src="@drawable/like_selector"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/img"

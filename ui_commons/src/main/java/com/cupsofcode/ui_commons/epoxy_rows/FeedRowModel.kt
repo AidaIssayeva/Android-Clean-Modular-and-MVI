@@ -57,20 +57,14 @@ abstract class FeedRowModel : EpoxyModel<CardView>() {
             view.distance.text = it
         }
 
-        view.liked.setImageResource(
-            if (likedStatus) {
-                R.drawable.ic_outline_thumb_up_24
-            } else {
-                R.drawable.ic_baseline_thumb_up_24
-            }
-        )
+        view.liked.isSelected = likedStatus
         view.liked.setOnClickListener(likeClickListener)
 
         Glide.with(view)
             .load(logo)
-            .circleCrop()
             .placeholder(R.drawable.ic_placeholder)
             .error(R.drawable.ic_placeholder)
+            .circleCrop()
             .into(view.img)
 
         view.setOnClickListener(onClickListener)
