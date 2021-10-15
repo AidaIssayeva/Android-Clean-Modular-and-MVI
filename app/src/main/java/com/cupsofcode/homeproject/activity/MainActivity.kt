@@ -1,6 +1,9 @@
 package com.cupsofcode.homeproject.activity
 
+import android.content.DialogInterface
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.cupsofcode.homeproject.R
 import com.cupsofcode.navigator.NavigatorComponent
@@ -41,6 +44,25 @@ class MainActivity : AppCompatActivity() {
                         review.addOnCompleteListener {
                             intentsSubject.onNext(ActivityIntent.InAppReviewCompleted)
                         }
+                    }
+                    viewState.error?.run {
+                        AlertDialog.Builder(this@MainActivity)
+                            .setOnDismissListener {
+                                it.dismiss()
+                            }
+                            .setMessage(R.string.error_message)
+                            .setTitle(
+                                getString(
+                                    R.string.error_title,
+                                    this.message
+                                )
+                            )
+                            .setPositiveButton(
+                                R.string.ok
+                            ) { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .show()
                     }
                 }, {
 
