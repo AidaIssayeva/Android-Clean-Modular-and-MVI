@@ -19,4 +19,6 @@ sealed class ActivityIntent {
     object Session : ActivityIntent()
 
     object NoOp : ActivityIntent()
+
+    object DialogDismissed: ActivityIntent()
 }

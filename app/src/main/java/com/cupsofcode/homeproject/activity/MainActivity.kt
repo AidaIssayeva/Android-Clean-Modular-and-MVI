@@ -1,8 +1,6 @@
 package com.cupsofcode.homeproject.activity
 
-import android.content.DialogInterface
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.cupsofcode.homeproject.R
@@ -32,6 +30,20 @@ class MainActivity : AppCompatActivity() {
         component.reviewManager()
     }
 
+    private val alertDialog by lazy {
+        AlertDialog.Builder(this@MainActivity)
+            .setOnDismissListener {
+                intentsSubject.onNext(ActivityIntent.DialogDismissed)
+            }
+            .setMessage(R.string.error_message)
+            .setPositiveButton(
+                R.string.ok
+            ) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -45,25 +57,16 @@ class MainActivity : AppCompatActivity() {
                             intentsSubject.onNext(ActivityIntent.InAppReviewCompleted)
                         }
                     }
+
                     viewState.error?.run {
-                        AlertDialog.Builder(this@MainActivity)
-                            .setOnDismissListener {
-                                it.dismiss()
-                            }
-                            .setMessage(R.string.error_message)
-                            .setTitle(
-                                getString(
-                                    R.string.error_title,
-                                    this.message
-                                )
+                        alertDialog.setTitle(
+                            getString(
+                                R.string.error_title,
+                                viewState.error.message
                             )
-                            .setPositiveButton(
-                                R.string.ok
-                            ) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .show()
-                    }
+                        )
+                        alertDialog.show()
+                    } ?: alertDialog.dismiss()
                 }, {
 
                 })
