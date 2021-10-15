@@ -10,4 +10,5 @@
     <string name="error_title">Uhh, Ohh %s</string>
     <string name="error_message">Something went wrong on our end, please try again later.</string>
     <string name="ok">Ok</string>
+    <string name="review_button">Trigger in-app Review Flow</string>
 </resources>

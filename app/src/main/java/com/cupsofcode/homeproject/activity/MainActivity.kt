@@ -2,22 +2,18 @@ package com.cupsofcode.homeproject.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import com.cupsofcode.feed.FeedFragment
-import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.homeproject.R
 import com.cupsofcode.navigator.NavigatorComponent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val compositeDisposable = CompositeDisposable()
 
     private val component by lazy {
-        val navigatorComponent =
-            applicationContext?.getSystemService(NavigatorComponent::class.java.name)
         MainActivityComponent.builder()
             .activityModule(MainActivityModule(supportFragmentManager, applicationContext))
             .build()
@@ -29,14 +25,23 @@ class MainActivity : AppCompatActivity() {
         PublishSubject.create<ActivityIntent>()
     }
 
+    private val reviewManager by lazy {
+        component.reviewManager()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         compositeDisposable.add(
             viewModel.bind(intentsSubject.hide())
                 .observeOn(AndroidSchedulers.mainThread(), true)
-                .subscribe({
-
+                .subscribe({ viewState ->
+                    viewState.reviewInfo?.run {
+                        val review = reviewManager.launchReviewFlow(this@MainActivity, this)
+                        review.addOnCompleteListener {
+                            intentsSubject.onNext(ActivityIntent.InAppReviewCompleted)
+                        }
+                    }
                 }, {
 
                 })
@@ -51,4 +56,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        intentsSubject.onNext(ActivityIntent.Session)
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        compositeDisposable.dispose()
+        super.onDestroy()
+    }
 }
