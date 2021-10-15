@@ -64,15 +64,20 @@ class ActivityViewModel @Inject constructor(
                     //after receiving a signal that review flow ended, we proceed with regular flow
                     navigator.navigateTo(NavigatorPath.Feed)
                 }.toObservable<ActivityIntent>()
+                .onErrorReturn {
+                    ActivityIntent.Error(it)
+                }
 
             val saveSessionNumber = it.ofType(ActivityIntent.Session::class.java)
                 .flatMapCompletable {
                     Completable.fromAction {
                         val session = sharedPreferences.getInt(SESSION, 1)
-                        println("shasdd::" + session)
                         sharedPreferences.edit().putInt(SESSION, (session + 1)).apply()
                     }
                 }.toObservable<ActivityIntent>()
+                .onErrorReturn {
+                    ActivityIntent.Error(it)
+                }
 
             Observable.merge(inAppReviewCompleted, saveSessionNumber)
         }

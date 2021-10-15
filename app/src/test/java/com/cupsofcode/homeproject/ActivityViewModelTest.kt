@@ -5,6 +5,7 @@ import com.cupsofcode.homeproject.activity.ActivityIntent
 import com.cupsofcode.homeproject.activity.ActivityViewModel
 import com.cupsofcode.homeproject.activity.ViewState
 import com.cupsofcode.navigator.Navigator
+import com.cupsofcode.navigator.NavigatorPath
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.testing.FakeReviewManager
 import com.google.android.play.core.tasks.OnCompleteListener
@@ -14,11 +15,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.reactivex.Completable
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Test
+import java.lang.ClassCastException
 import java.util.concurrent.TimeUnit
 
 
@@ -141,7 +144,81 @@ class ActivityViewModelTest {
         resultsObserver.assertValues(*expectedViewStates)
     }
 
+    @Test
+    fun `should successfully navigate to feed after in-app review completed`() {
+        //given
+        val expectedViewStates = arrayOf(
+            ViewState()
+        )
+        every { navigator.navigateTo(NavigatorPath.Feed) } returns Completable.complete()
+
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+        intentSubject.onNext(ActivityIntent.InAppReviewCompleted)
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    @Test
+    fun `should update viewstate with error after in-app review completed`() {
+        //given
+        val error = Throwable(Error)
+        val expectedViewStates = arrayOf(
+            ViewState(),
+            ViewState().copy(error = error)
+        )
+        every { navigator.navigateTo(NavigatorPath.Feed) } returns Completable.error(error)
+
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+        intentSubject.onNext(ActivityIntent.InAppReviewCompleted)
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    @Test
+    fun `save session number successfully`() {
+        //given
+        val expectedViewStates = arrayOf(
+            ViewState()
+        )
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+        intentSubject.onNext(ActivityIntent.Session)
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    @Test
+    fun `save session number failed`() { //TODO: fix
+        //given
+        val error = Throwable(Error)
+        val expectedViewStates = arrayOf(
+            ViewState(),
+            ViewState().copy(error = error)
+        )
+
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+        intentSubject.onNext(ActivityIntent.Session)
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
     companion object {
         private const val Unsuccessful_Task = "Unsuccessful_Task_From_Play_Core_API"
+        private const val Error = "Error"
     }
 }
