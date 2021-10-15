@@ -21,7 +21,6 @@ import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
 import org.junit.Before
 import org.junit.Test
-import java.lang.ClassCastException
 import java.util.concurrent.TimeUnit
 
 
@@ -183,11 +182,13 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `save session number successfully`() {
+    fun `save session number - successfully`() {
         //given
         val expectedViewStates = arrayOf(
             ViewState()
         )
+
+        every { sharedPreferences.getInt("session", 1) } returns 2
 
         //when
         val resultsObserver = activityViewModel.bind(intentSubject).test()
@@ -199,7 +200,7 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `save session number failed`() { //TODO: fix
+    fun `save session number  - failed`() {
         //given
         val error = Throwable(Error)
         val expectedViewStates = arrayOf(
@@ -207,6 +208,7 @@ class ActivityViewModelTest {
             ViewState().copy(error = error)
         )
 
+        every { sharedPreferences.getInt("session", 1) }.throws(error)
 
         //when
         val resultsObserver = activityViewModel.bind(intentSubject).test()
