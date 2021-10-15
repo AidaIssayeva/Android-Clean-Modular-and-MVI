@@ -1,19 +1,19 @@
 package com.cupsofcode.homeproject
 
-import android.content.Context
 import android.content.SharedPreferences
-import com.cupsofcode.feed.mvi.FeedViewState
 import com.cupsofcode.homeproject.activity.ActivityIntent
 import com.cupsofcode.homeproject.activity.ActivityViewModel
 import com.cupsofcode.homeproject.activity.ViewState
 import com.cupsofcode.navigator.Navigator
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.testing.FakeReviewManager
+import com.google.android.play.core.tasks.OnCompleteListener
 import com.google.android.play.core.tasks.Task
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler
 import io.reactivex.subjects.PublishSubject
@@ -26,8 +26,6 @@ class ActivityViewModelTest {
 
     @RelaxedMockK
     private lateinit var navigator: Navigator
-
-    private val context = mockk<Context>(relaxed = true)
 
     private val reviewManager: FakeReviewManager = mockk(relaxed = true)
 
@@ -66,18 +64,42 @@ class ActivityViewModelTest {
     }
 
     @Test
-    fun `should return a viewstate with reviewInfo to launch `() {
+    fun `should return a viewstate without any reviewinfo because number of sessions is not 5,10,20 `() {
         //given
-        val mockRequestInfo = mockk<Task<ReviewInfo>>(relaxed = true)
-
-        val viewstates = arrayOf(
-            ViewState(),
-            ViewState().copy(
-                reviewInfo = mockRequestInfo.result
-            )
+        val expectedViewStates = arrayOf(
+            ViewState()
         )
-        every { reviewManager.requestReviewFlow() } returns mockRequestInfo
+        every { sharedPreferences.getInt("session", 1) } returns 4
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    @Test
+    fun `should return a viewstate with reviewinfo because number of sessions is 5,10,20 && retrieving reviewInfo was successful `() {
+        //given
+        val mockReviewInfo = mockk<ReviewInfo>(relaxed = true)
+        val mockReviewInstance = mockk<Task<ReviewInfo>>(relaxed = true)
+
+        val expectedViewStates = arrayOf(
+            ViewState(),
+            ViewState().copy(reviewInfo = mockReviewInfo)
+        )
+
+        every { mockReviewInstance.isSuccessful } returns true
+        every { mockReviewInstance.result } returns mockReviewInfo
+        every { reviewManager.requestReviewFlow() } returns mockReviewInstance
         every { sharedPreferences.getInt("session", 1) } returns 5
+
+        val slot = slot<OnCompleteListener<ReviewInfo>>()
+        every { mockReviewInstance.addOnCompleteListener(capture(slot)) } answers {
+            slot.captured.onComplete(mockReviewInstance)
+            mockReviewInstance
+        }
 
         //when
         val resultsObserver = activityViewModel.bind(intentSubject).test()
@@ -85,6 +107,41 @@ class ActivityViewModelTest {
 
         //then
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        resultsObserver.assertValues(*viewstates)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    @Test
+    fun `should return a viewstate with reviewinfo because number of sessions is 5,10,20 && retrieving reviewInfo was NOT successful `() {
+        //given
+        val mockReviewInfo = mockk<ReviewInfo>(relaxed = true)
+        val mockReviewInstance = mockk<Task<ReviewInfo>>(relaxed = true)
+
+        val expectedViewStates = arrayOf(
+            ViewState()
+        )
+
+        every { mockReviewInstance.isSuccessful } returns false
+        every { mockReviewInstance.result } returns mockReviewInfo
+        every { mockReviewInstance.exception } returns Exception(Unsuccessful_Task)
+        every { reviewManager.requestReviewFlow() } returns mockReviewInstance
+        every { sharedPreferences.getInt("session", 1) } returns 5
+
+        val slot = slot<OnCompleteListener<ReviewInfo>>()
+        every { mockReviewInstance.addOnCompleteListener(capture(slot)) } answers {
+            slot.captured.onComplete(mockReviewInstance)
+            mockReviewInstance
+        }
+
+        //when
+        val resultsObserver = activityViewModel.bind(intentSubject).test()
+
+
+        //then
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        resultsObserver.assertValues(*expectedViewStates)
+    }
+
+    companion object {
+        private const val Unsuccessful_Task = "Unsuccessful_Task_From_Play_Core_API"
     }
 }
