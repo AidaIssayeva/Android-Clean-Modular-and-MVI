@@ -97,6 +97,4 @@ class ActivityViewModel @Inject constructor(
                 else -> previous.copy(reviewInfo = null)
             }
         }
-
-
 }
