@@ -53,7 +53,7 @@ dependencies {
 //  implementation project(':data:simple')
 //  implementation project(':base')
 //  implementation project(':data:base')
-//  implementation project(':in_memory_cache')
+//  implementation project(':cache')
 //  implementation project(':data:database')
 //  implementation project(':network')
 //  implementation project(':services:featureflags')

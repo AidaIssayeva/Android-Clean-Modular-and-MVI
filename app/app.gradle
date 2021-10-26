@@ -1,0 +1,344 @@
+//apply plugin: 'com.android.application'
+//apply plugin: 'kotlin-android'
+//apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-kapt'
+//
+//android {
+//  compileSdkVersion 29
+//
+//  defaultConfig {
+//    applicationId "com.cupsofcode.homeproject"
+//    minSdkVersion 26
+//    targetSdkVersion 29
+//    versionCode 1
+//    versionName "1.0"
+//
+//    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+//  }
+//
+//  buildTypes {
+//    release {
+//      minifyEnabled false
+//      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//    }
+//  }
+//}
+//
+//dependencies {
+//  implementation fileTree(dir: "libs", include: ["*.jar"])
+//  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+//  implementation 'androidx.core:core-ktx:1.3.2'
+//  implementation 'androidx.appcompat:appcompat:1.2.0'
+//  implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+//  testImplementation 'junit:junit:4.12'
+//  androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+//  androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+//
+//  implementation 'com.google.dagger:dagger:2.23.2'
+//  kapt 'com.google.dagger:dagger-compiler:2.23.2'
+//  implementation 'com.squareup.retrofit2:retrofit:2.6.1'
+//
+//  implementation 'com.squareup.moshi:moshi:1.8.0'
+//  implementation 'com.squareup.retrofit2:converter-moshi:2.6.1'
+//  implementation 'com.squareup.retrofit2:adapter-rxjava2:2.6.1'
+//  implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+//  implementation 'com.squareup.okhttp3:logging-interceptor:4.2.1'
+//
+//  implementation 'com.jakewharton.threetenabp:threetenabp:1.2.1'
+//
+//  implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+//
+//  implementation project(':network')
+//  implementation project(':repository_restaurant')
+//  implementation project(':datasource_restaurant')
+//  implementation project(':feed')
+//  implementation project(':ui_commons')
+//  implementation project(':navigator')
+//
+//  // This dependency is downloaded from the Google’s Maven repository.
+//  // So, make sure you also include that repository in your project's build.gradle file.
+//  implementation 'com.google.android.play:core:1.10.2'
+//
+//  // For Kotlin users also import the Kotlin extensions library for Play Core:
+//  implementation 'com.google.android.play:core-ktx:1.8.1'
+//
+//  implementation 'io.mockk:mockk:1.10.2'
+//}
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.firebase.crashlytics'
+apply from: "$project.rootDir/config.gradle"
+
+
+kapt {
+  correctErrorTypes = true
+}
+
+androidExtensions {
+  experimental = true
+}
+
+android {
+  compileSdkVersion BuildVersion.compileSdkVersion
+
+  defaultConfig {
+    applicationId "com.cupsofcode.homeproject"
+    minSdkVersion BuildVersion.minSdkVersion
+    targetSdkVersion BuildVersion.targetSdkVersion
+    versionCode BuildVersion.versionCode
+    versionName BuildVersion.versionName
+    testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments << ["dagger.gradle.incremental": "true"]
+      }
+    }
+  }
+
+  signingConfigs {
+    release {
+
+      Properties properties = new Properties()
+      properties.load(rootProject.file('gradle.properties').newDataInputStream())
+
+      storeFile file("../release.keystore")
+      storePassword System.getenv("STORE_PASSWORD") ?: ""
+      keyAlias System.getenv("KEY_ALIAS") ?: ""
+      keyPassword System.getenv("KEY_PASSWORD") ?: ""
+      v2SigningEnabled true
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+
+  buildTypes {
+
+    debug {
+      applicationIdSuffix ".debug"
+      //versionNameSuffix "-${gitBranch()}"
+    }
+
+    nightly {
+      applicationIdSuffix ".nightly"
+      //versionNameSuffix "-${gitBranch()}"
+      signingConfig signingConfigs.release
+    }
+
+    release {
+      signingConfig signingConfigs.release
+    }
+  }
+
+  flavorDimensions "default"
+  productFlavors {
+
+    qa {
+      dimension "default"
+      applicationIdSuffix ".qa"
+      //versionNameSuffix "-${gitHash()}"
+//      firebaseAppDistribution {
+//        releaseNotesFile = "${rootProject.projectDir}/changelog.txt"
+//        serviceCredentialsFile = "googlekey.json"
+//        groups = "android-nightly"
+//      }
+
+      resValue "string", "launcher_name", "Marcus QA"
+
+      manifestPlaceholders =
+              [branchTestMode: "true",
+               branchKey: "key_test_pcQFN1afRDYumIBH5nxsZpoiyqpoX7ci",
+               branchLink: "marcusgs.test-app.link",
+               branchLinkAlt: "marcusgs-alternate.test-app.link"]
+    }
+
+    dev {
+      dimension "default"
+      applicationIdSuffix ".dev"
+      //versionNameSuffix "-${gitBranch()}"
+//      firebaseAppDistribution {
+//        releaseNotesFile = "${rootProject.projectDir}/changelog.txt"
+//        serviceCredentialsFile = "${rootProject.projectDir}/googlekey.json"
+//        groups = "android-nightly"
+//      }
+
+      resValue "string", "launcher_name", "Marcus UAT"
+
+      manifestPlaceholders =
+              [branchTestMode: "true",
+               branchKey: "key_test_pcQFN1afRDYumIBH5nxsZpoiyqpoX7ci",
+               branchLink: "marcusgs.test-app.link",
+               branchLinkAlt: "marcusgs-alternate.test-app.link"]
+    }
+
+
+    prod {
+      dimension "default"
+//      firebaseAppDistribution {
+//        releaseNotesFile = "${rootProject.projectDir}/changelog.txt"
+//        serviceCredentialsFile = "$rootDir/googlekey.json"
+//        groups = "android-nightly"
+//      }
+
+      resValue "string", "launcher_name", "Marcus"
+
+      manifestPlaceholders = [branchTestMode: "false",
+                              branchKey: "key_live_kaLDU6jnJA0CdQzL5fCwKnabsvfa3Q2Y",
+                              branchLink: "marcusgs.app.link",
+                              branchLinkAlt: "marcusgs-alternate.app.link"]
+    }
+  }
+}
+
+dependencies {
+  implementation fileTree(dir: '../libs', include: ['*.aar'])
+
+  implementation project(':cache')
+  implementation project(':network')
+
+  implementation project(':repository_restaurant')
+  implementation project(':datasource_restaurant')
+
+  implementation project(':feed')
+
+  implementation project(':navigator')
+
+  implementation project(':ui_commons')
+
+  implementation Dependencies.branch
+
+  implementation Dependencies.play_services
+  implementation Dependencies.play_phone_auth
+
+  implementation Dependencies.sqlcipher
+  implementation Dependencies.androidx_sqlite
+
+  implementation Dependencies.kotlin
+
+  implementation Dependencies.androidx_appcompat
+  implementation Dependencies.material_design
+
+  implementation Dependencies.androidx_legacy
+
+  implementation Dependencies.rx_core
+  implementation Dependencies.rx_kotlin
+  implementation Dependencies.rx_relay
+  implementation Dependencies.firebase_messaging
+
+  implementation Dependencies.arch_viewmodel
+
+  implementation Dependencies.dagger_core
+  kapt Dependencies.dagger_compiler
+
+  implementation Dependencies.conductor
+  implementation Dependencies.conductor_rx
+  implementation Dependencies.conductor_archlifecycle
+
+  implementation Dependencies.apache_io
+  implementation Dependencies.apache_codec
+
+  implementation Dependencies.androidx_constraintlayout
+
+  implementation Dependencies.simplestore
+
+  implementation Dependencies.tink
+
+  implementation Dependencies.androidx_security
+
+  implementation Dependencies.koptional_core
+  implementation Dependencies.koptional_rx
+
+  debugImplementation Dependencies.leakcanary
+
+  implementation Dependencies.timber
+
+  implementation Dependencies.process_phoenix
+
+  implementation Dependencies.three_ten_abp
+
+  implementation Dependencies.firebase_crashlytics
+
+  implementation Dependencies.okhttp
+  implementation Dependencies.okhttp_logging
+
+  implementation Dependencies.moshi
+
+  implementation Dependencies.retrofit
+  implementation Dependencies.retrofit_moshi
+  implementation Dependencies.retrofit_rxjava
+
+//  implementation Dependencies.android_arch_runtime
+//  implementation Dependencies.android_arch_common
+
+  implementation Dependencies.apollo_core
+
+  implementation Dependencies.firebase_analytics
+
+//  lintChecks project(':android_lint_checks')
+
+  implementation Dependencies.plaid_linking
+
+  implementation Dependencies.glide_core
+  implementation Dependencies.glide_annotations
+  kapt Dependencies.glide_compiler
+  implementation Dependencies.glide_integration
+  implementation Dependencies.glide_transformations
+
+}
+
+task decryptKeystore(type: Exec) {
+
+  Properties properties = new Properties()
+  properties.load(rootProject.file('gradle.properties').newDataInputStream())
+
+  workingDir "${rootProject.projectDir}"
+  file("${rootProject.projectDir}/keystore.crypt").text =
+          System.getenv("ENCRYPTED_KEYSTORE") ?: ""
+  commandLine 'sh', "decrypt.sh", "keystore.crypt", "release.keystore",
+          System.getenv("KEYSTORE_ENCRYPTION_KEY") ?: ""
+}
+
+task decryptDevGoogleKey(type: Exec) {
+  workingDir "${rootProject.projectDir}"
+  file("${rootProject.projectDir}/googlekey-dev.crypt").text =
+          System.getenv("ENCRYPTED_GOOGLE_KEY_DEV") ?: ""
+  commandLine 'sh', "decrypt.sh", "googlekey-dev.crypt", "googlekey.json",
+          System.getenv("GOOGLE_KEY_ENCRYPTION_KEY") ?: ""
+}
+
+task decryptProdGoogleKey(type: Exec) {
+  workingDir "${rootProject.projectDir}"
+  file("${rootProject.projectDir}/googlekey-prod.crypt").text =
+          System.getenv("ENCRYPTED_GOOGLE_KEY_PROD") ?: ""
+  commandLine 'sh', "decrypt.sh", "googlekey-prod.crypt", "googlekey.json",
+          System.getenv("GOOGLE_KEY_ENCRYPTION_KEY") ?: ""
+}
+
+
+task cleanup(type: Exec) {
+  workingDir "${rootProject.projectDir}"
+  commandLine 'sh', "cleanup.sh"
+}
+
+tasks.whenTaskAdded { task ->
+  if (task.name ==~ /assemble.*Release/ || task.name ==~ /assemble.*Nightly/) {
+    task.dependsOn decryptKeystore
+  }
+  if (task.name ==~ /appDistributionUpload.*Release/ || task.name ==~ /appDistributionUpload.*Nightly/) {
+    if (task.name.contains("Dev")) {
+      task.dependsOn decryptDevGoogleKey
+    } else {
+      task.dependsOn decryptProdGoogleKey
+    }
+  }
+}
+

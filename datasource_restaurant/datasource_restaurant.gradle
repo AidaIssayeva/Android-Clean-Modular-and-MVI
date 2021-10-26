@@ -1,0 +1,5 @@
+apply from: "$rootDir/${GradleTemplates.common_data_source}"
+
+dependencies {
+    implementation project(':repository_restaurant')
+}

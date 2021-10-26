@@ -60,21 +60,21 @@ kapt {
 }
 
 dependencies {
-  implementation project(':base')
-
-  implementation project(':data:base')
-
-  implementation project(':framework:presentation')
-  implementation project(':framework:mvi')
-
-  implementation project(':ui:ui_commons')
-  implementation project(':ui:dialog')
-
-  implementation project(':services:featureflags')
-  implementation project(':services:analytics')
-
-  implementation project(':navigation')
-  implementation project(':in_memory_cache')
+//  implementation project(':base')
+//
+//  implementation project(':data:base')
+//
+//  implementation project(':framework:presentation')
+//  implementation project(':framework:mvi')
+//
+//  implementation project(':ui:ui_commons')
+//  implementation project(':ui:dialog')
+//
+//  implementation project(':services:featureflags')
+//  implementation project(':services:analytics')
+//
+//  implementation project(':navigation')
+//  implementation project(':in_memory_cache')
 
   implementation Dependencies.kotlin
 

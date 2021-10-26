@@ -6,4 +6,12 @@ include ':datasource_restaurant'
 include ':repository_restaurant'
 include ':app'
 include ':navigator'
-rootProject.name = "HomeProject"
+
+def configureBuildFiles(ProjectDescriptor project) {
+    project.children.each {
+        child ->
+            child.buildFileName = "${child.name}.gradle"
+            configureBuildFiles(child)
+    }
+}
+configureBuildFiles(rootProject)

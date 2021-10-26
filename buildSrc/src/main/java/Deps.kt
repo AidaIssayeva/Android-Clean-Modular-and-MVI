@@ -20,19 +20,18 @@ object Version {
 }
 
 object BuildVersion {
-    const val minSdkVersion = 24
+    const val minSdkVersion = 26
     const val compileSdkVersion = 29
     const val targetSdkVersion = 29
     
-    const val versionName = "1.3.0"
-    const val versionCode = 38
+    const val versionName = "1.0.0"
+    const val versionCode = 1
 }
 
 object Dependencies {
 
     const val branch = "io.branch.sdk.android:library:5.0.0"
     const val segment = "com.segment.analytics.android:analytics:4.9.0"
-    const val braze_appboy_segment = "com.appboy:appboy-segment-integration:4.0.0"
     const val appsflyer = "com.appsflyer:segment-android-integration:1.19"
     const val firebase_segment = "com.segment.analytics.android.integrations:firebase:2.1.0@aar"
 

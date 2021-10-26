@@ -38,24 +38,24 @@ def containsIgnoreCase = { first, second ->
 
 android {
   defaultConfig {
-    def config = project.configDev
-
-    def flavor = currentFlavor()
-
-    if (containsIgnoreCase(flavor, "Prod") || containsIgnoreCase(flavor, "Beta")) {
-      println("PROD/BETA config!")
-      config = project.configProd
-    } else if (containsIgnoreCase(flavor, "Qa")) {
-      println("QA config!")
-      config = project.configQa
-    } else {
-      println("DEV config!")
-    }
-
-    config.each { k, v ->
-      println("[M:] [$flavor] Adding build config field $k=$v.")
-      buildConfigField "String", k, "\"$v\""
-    }
+//    def config = project.configDev
+//
+//    def flavor = currentFlavor()
+//
+//    if (containsIgnoreCase(flavor, "Prod") || containsIgnoreCase(flavor, "Beta")) {
+//      println("PROD/BETA config!")
+//      config = project.configProd
+//    } else if (containsIgnoreCase(flavor, "Qa")) {
+//      println("QA config!")
+//      config = project.configQa
+//    } else {
+//      println("DEV config!")
+//    }
+//
+//    config.each { k, v ->
+//      println("[M:] [$flavor] Adding build config field $k=$v.")
+//      buildConfigField "String", k, "\"$v\""
+//    }
   }
 }
 
