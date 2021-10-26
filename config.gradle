@@ -1,0 +1,61 @@
+def currentFlavor() {
+  def flavor = ""
+
+  getGradle().getStartParameter().getTaskNames().any { name ->
+    def matcher = (name =~ /^(?:.*:)*([a-z]+[A-Z][A-Za-z]+)$/)
+    if (matcher.find()) {
+      flavor = matcher.group(1)
+      return true
+    }
+  }
+  return flavor
+}
+
+def readConfig = { configFile, configVariant ->
+  def config = [:]
+  println("[M:] Reading config from: $project.rootDir/$configFile")
+  try {
+    new File("$project.rootDir/$configFile").eachLine { line ->
+      def matcher = (line =~ /^\s*([\w\d.\-_]+)\s*=\s*['"]?(.*?)?['"]?\s*$/)
+      if (matcher.getCount() == 1 && matcher[0].size() == 3) {
+        config.put(matcher[0][1], matcher[0][2])
+      }
+    }
+  } catch (FileNotFoundException ignored) {
+    println(ignored)
+    println("[M:] Missing config.properties file.")
+  }
+  project.ext.set(configVariant, config)
+}
+
+//readConfig("config-qa.properties", "configQa")
+//readConfig("config-prod.properties", "configProd")
+//readConfig("config-dev.properties", "configDev")
+
+def containsIgnoreCase = { first, second ->
+  return first.toLowerCase().contains(second.toLowerCase())
+}
+
+android {
+  defaultConfig {
+    def config = project.configDev
+
+    def flavor = currentFlavor()
+
+    if (containsIgnoreCase(flavor, "Prod") || containsIgnoreCase(flavor, "Beta")) {
+      println("PROD/BETA config!")
+      config = project.configProd
+    } else if (containsIgnoreCase(flavor, "Qa")) {
+      println("QA config!")
+      config = project.configQa
+    } else {
+      println("DEV config!")
+    }
+
+    config.each { k, v ->
+      println("[M:] [$flavor] Adding build config field $k=$v.")
+      buildConfigField "String", k, "\"$v\""
+    }
+  }
+}
+

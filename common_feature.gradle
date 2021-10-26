@@ -1,0 +1,112 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: "$project.rootDir/config.gradle"
+
+android {
+  compileSdkVersion BuildVersion.compileSdkVersion
+
+  defaultConfig {
+    minSdkVersion BuildVersion.minSdkVersion
+    targetSdkVersion BuildVersion.targetSdkVersion
+    versionCode BuildVersion.versionCode
+    versionName BuildVersion.versionName
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments << ["dagger.gradle.incremental": "true"]
+      }
+    }
+
+    kapt {
+      javacOptions {
+        option("-Adagger.fastInit=enabled")
+        option("-Adagger.formatGeneratedSource=disabled")
+      }
+      arguments {
+        arg("dagger.gradle.incremental", "true")
+      }
+    }
+  }
+
+  buildTypes {
+    nightly {}
+
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
+
+androidExtensions {
+  experimental = true
+}
+
+kapt {
+  correctErrorTypes = true
+}
+
+dependencies {
+  implementation project(':base')
+
+  implementation project(':data:base')
+
+  implementation project(':framework:presentation')
+  implementation project(':framework:mvi')
+
+  implementation project(':ui:ui_commons')
+  implementation project(':ui:dialog')
+
+  implementation project(':services:featureflags')
+  implementation project(':services:analytics')
+
+  implementation project(':navigation')
+  implementation project(':in_memory_cache')
+
+  implementation Dependencies.kotlin
+
+  testImplementation Dependencies.junit
+  testImplementation Dependencies.core_testing
+
+  implementation Dependencies.material_design
+  implementation Dependencies.androidx_appcompat
+  implementation Dependencies.androidx_legacy //min api is 23 - should remove this?
+  implementation Dependencies.androidx_ktx
+  implementation Dependencies.androidx_constraintlayout
+
+  implementation Dependencies.conductor
+  implementation Dependencies.conductor_rx
+  implementation Dependencies.conductor_archlifecycle
+
+  implementation Dependencies.dagger_core
+  kapt Dependencies.dagger_compiler
+
+  implementation Dependencies.rx_core
+  implementation Dependencies.rx_android
+  implementation Dependencies.rx_kotlin
+  implementation Dependencies.rx_relay
+  implementation Dependencies.rx_binding_core
+
+  implementation Dependencies.koptional_core
+  implementation Dependencies.koptional_rx
+
+  implementation Dependencies.epoxy_core
+  kapt Dependencies.epoxy_processor
+
+  implementation Dependencies.three_ten_abp
+
+  implementation Dependencies.timber
+}

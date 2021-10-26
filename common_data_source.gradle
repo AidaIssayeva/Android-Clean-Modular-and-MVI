@@ -1,0 +1,74 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: "$project.rootDir/config.gradle"
+
+android {
+  compileSdkVersion BuildVersion.compileSdkVersion
+
+  defaultConfig {
+    minSdkVersion BuildVersion.minSdkVersion
+    targetSdkVersion BuildVersion.targetSdkVersion
+    versionCode BuildVersion.versionCode
+    versionName BuildVersion.versionName
+
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments << ["dagger.gradle.incremental": "true"]
+      }
+    }
+    kapt {
+      javacOptions {
+        option("-Adagger.fastInit=enabled")
+        option("-Adagger.formatGeneratedSource=disabled")
+      }
+      arguments {
+        arg("dagger.gradle.incremental", "true")
+      }
+    }
+  }
+
+  buildTypes {
+    nightly {}
+    release {
+      minifyEnabled false
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+    }
+  }
+
+  compileOptions {
+    sourceCompatibility 1.8
+    targetCompatibility 1.8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
+  }
+}
+
+dependencies {
+//  implementation project(':data:simple')
+//  implementation project(':base')
+//  implementation project(':data:base')
+//  implementation project(':in_memory_cache')
+//  implementation project(':data:database')
+//  implementation project(':network')
+//  implementation project(':services:featureflags')
+
+  testImplementation Dependencies.junit
+
+  implementation Dependencies.apollo_core
+
+  implementation Dependencies.three_ten_abp
+  implementation Dependencies.rx_core
+  implementation Dependencies.rx_kotlin
+  implementation Dependencies.koptional_core
+  implementation Dependencies.koptional_rx
+  implementation Dependencies.timber
+  implementation Dependencies.dagger_core
+  implementation Dependencies.androidx_paging
+  kapt Dependencies.dagger_compiler
+}
