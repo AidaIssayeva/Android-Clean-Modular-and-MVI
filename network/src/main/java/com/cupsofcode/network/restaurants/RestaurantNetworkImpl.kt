@@ -12,8 +12,8 @@ class RestaurantNetworkImpl @Inject constructor(private val apiService: Restaura
         offset: Int,
         limit: Int
     ): Single<List<StoreResponse>> {
-      return apiService.getRestaurants(lat,long,offset, limit)
-           .map { it.stores }
+        return apiService.getRestaurants(lat, long, offset, limit)
+            .map { it.stores }
     }
 
     override fun getRestaurantDetails(restaurantId: Int): Single<RestaurantResponse> {
