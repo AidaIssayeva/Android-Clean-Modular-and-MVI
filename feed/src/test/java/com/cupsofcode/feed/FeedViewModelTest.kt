@@ -3,6 +3,8 @@ package com.cupsofcode.feed
 import com.cupsofcode.feed.mvi.FeedIntent
 import com.cupsofcode.feed.mvi.FeedViewState
 import com.cupsofcode.feed.usecase.FeedRestaurantsUseCase
+import com.cupsofcode.feed.usecase.RestaurantLikedUseCase
+import com.cupsofcode.navigator.Navigator
 import com.cupsofcode.ui_commons.wrapper.StringResources
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -20,6 +22,12 @@ class FeedViewModelTest {
     private lateinit var useCase: FeedRestaurantsUseCase
 
     @RelaxedMockK
+    private lateinit var likedUseCase: RestaurantLikedUseCase
+
+    @RelaxedMockK
+    private lateinit var navigator: Navigator
+
+    @RelaxedMockK
     private lateinit var stringResources: StringResources
 
     private val testScheduler = TestScheduler()
@@ -30,7 +38,7 @@ class FeedViewModelTest {
     fun setUp() {
         MockKAnnotations.init(this)
         RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
-        feedViewModel = FeedViewModel(useCase, stringResources)
+        feedViewModel = FeedViewModel(useCase, likedUseCase, stringResources, navigator)
         intentSubject = PublishSubject.create<FeedIntent>()
     }
 
